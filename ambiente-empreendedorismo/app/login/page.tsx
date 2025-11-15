@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { EyeIcon, EyeSlashIcon, LockClosedIcon, UserCircleIcon, UserIcon } from '@heroicons/react/24/outline';
 
@@ -10,7 +10,16 @@ export default function LoginPage() {
   const [mensagem, setMensagem] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [mostraSenha, setMostraSenha] = useState(false);
+  const [lembrar, setLembrar] = useState(false);
   const router = useRouter();
+
+    useEffect(() => {
+        const salvo = localStorage.getItem("lembrarUsuario");
+        if (salvo) {
+            setNomeUsuario(salvo);
+            setLembrar(true);
+        }
+    }, []);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -18,7 +27,7 @@ export default function LoginPage() {
     setCarregando(true);
 
     try {
-      const response = await fetch("http://localhost:4000/login", {
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome_usuario: nomeUsuario, senha }), 
@@ -27,19 +36,15 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setMensagem("✅ Login bem-sucedido!");
-        localStorage.setItem("token", data.token);
-
-        // Aguarda 1 segundo e redireciona
-        setTimeout(() => {
-          router.push("/home");
-        }, 1000);
+        if(lembrar) localStorage.setItem("lembrarUsuario", nomeUsuario);
+        else localStorage.removeItem("lembrarUsuario");
+        router.push("/");
       } else {
-        setMensagem(`❌ ${data.error}`);
+        setMensagem(`${data.error}`);
       }
     } catch (err) {
       console.error(err);
-      setMensagem("❌ Erro ao conectar com o servidor");
+      setMensagem("Erro ao conectar com o servidor");
     } finally {
       setCarregando(false);
     }
@@ -76,6 +81,8 @@ export default function LoginPage() {
                                 type="text"
                                 placeholder="Nome de usuário"
                                 className="w-full outline-none text-black text-sm"
+                                value={nomeUsuario}
+                                onChange={(e) => setNomeUsuario(e.target.value)}
                                 required
                             />
                         </div>
@@ -115,7 +122,12 @@ export default function LoginPage() {
 
                     <div className="flex item-center justify-between mb-1">
                         <label className="flex items-center text-sm text-gray-700 select-none cursor-pointer">
-                            <input type="checkbox" className="mr-2 w-4 h-4 rounded border-gray-300 focus:ring-blue-500"/>
+                            <input 
+                                type="checkbox" 
+                                checked={lembrar}
+                                onChange={(e) => setLembrar(e.target.checked)}
+                                className="mr-2 w-4 h-4 rounded border-gray-300 focus:ring-blue-500"
+                            />
                             Lembre-me
                         </label>
 
