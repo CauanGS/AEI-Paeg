@@ -16,3 +16,15 @@ model Usuario {
 
   @@map("usuarios")
 }
+
+model News {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text    // Descrição curta (para o card)
+  content     String   @db.LongText // Conteúdo completo (para a página da notícia)
+  image_path  String?  // O '?' torna o campo opcional
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("news") // Mapeia para a tabela "news" no banco
+}
