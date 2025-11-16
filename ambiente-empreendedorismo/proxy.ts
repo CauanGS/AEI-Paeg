@@ -13,6 +13,11 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  if (token && pathname === "/cadastro") {
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
   // Se o usuário NÃO está logado e tenta acessar / (home) => leva para /login
   if (!token && pathname === "/") {
     url.pathname = "/login";
@@ -23,5 +28,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login"],
+  matcher: ["/", "/login", "/cadastro"],
 };

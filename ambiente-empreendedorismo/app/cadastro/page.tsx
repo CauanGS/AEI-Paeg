@@ -2,14 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { EyeIcon, EyeSlashIcon, LockClosedIcon, UserCircleIcon, UserIcon } from '@heroicons/react/24/outline';
+import { EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon, SparklesIcon, UserCircleIcon, UserIcon } from '@heroicons/react/24/outline';
 
 export default function CadastroPage() {
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [senha, setSenha] = useState("");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
   const [mensagem, setMensagem] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [mostraSenha, setMostraSenha] = useState(false);
+  const [mostraConfirmarSenha, setMostraConfirmarSenha] = useState(false);
   const [lembrar, setLembrar] = useState(false);
   const router = useRouter();
 
@@ -26,11 +30,29 @@ export default function CadastroPage() {
     setMensagem("");
     setCarregando(true);
 
+    if(
+        nome.trim() === "" ||
+        nomeUsuario.trim() === "" ||
+        email.trim() === "" ||
+        senha.trim() === "" ||
+        confirmarSenha.trim() === ""
+    ) {
+        setMensagem("Por favor, preencha todos os campos");
+        setCarregando(false);
+        return;
+    }
+
+    if(senha !== confirmarSenha) {
+        setMensagem("As senhas não coincidem");
+        setCarregando(false);
+        return;
+    }
+
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("/api/cadastro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome_usuario: nomeUsuario, senha }), 
+        body: JSON.stringify({ nome_usuario: nomeUsuario, nome, email, senha }), 
       });
 
       const data = await response.json();
@@ -38,7 +60,7 @@ export default function CadastroPage() {
       if (response.ok) {
         if(lembrar) localStorage.setItem("lembrarUsuario", nomeUsuario);
         else localStorage.removeItem("lembrarUsuario");
-        router.push("/");
+        router.push("/login");
       } else {
         setMensagem(`${data.error}`);
       }
@@ -51,7 +73,7 @@ export default function CadastroPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center" style={{backgroundImage: "url('/assets/background.jpg')"}}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center" style={{backgroundImage: "url('/assets/background_cadastro.jpg')"}}>
         <div className="bg-white rounded-lg shadow-lg w-full max-w-sm overflow-hidden p-10">
 
             <div className="flex items-center justify-center gap-4 p-4 bg-white" style={{userSelect: "none"}}>
@@ -64,12 +86,29 @@ export default function CadastroPage() {
             </div>
 
             <div className="text-center px-6 mt-1" style={{userSelect: "text"}}>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Bem vindo de volta</h2>
-                <p className="text-gray-600 text-sm">A tua jornada empreendedora te aguarda!</p>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Junte-se a AEI</h2>
+                <p className="text-gray-600 text-[13px]">Comece hoje a tua jornada empreendedora</p>
             </div>
 
             <div className="p-1 mt-3">
                 <form onSubmit={handleCadastro} className="flex flex-col gap-3">
+                    <div className="flex flex-col mb-2" style={{userSelect: "none"}}>
+                        <label htmlFor="nome" className="text-sm font-medium text-gray-700 mb-2">Nome completo</label>
+                        
+                        <div className="flex items-center border border-gray-300 rounded p-2 focus-within:border-blue-500">
+                            <SparklesIcon className="w-4 h-4 text-black mr-2 flex-shrink-0"/>
+                            <input
+                                id="nome"
+                                type="text"
+                                maxLength={200}
+                                placeholder="Nome completo"
+                                className="w-full outline-none text-black text-sm"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
 
                     <div className="flex flex-col mb-2" style={{userSelect: "none"}}>
                         <label htmlFor="nomeUsuario" className="text-sm font-medium text-gray-700 mb-2">Nome de usuário</label>
@@ -79,10 +118,29 @@ export default function CadastroPage() {
                             <input
                                 id="nomeUsuario"
                                 type="text"
+                                maxLength={20}
                                 placeholder="Nome de usuário"
                                 className="w-full outline-none text-black text-sm"
                                 value={nomeUsuario}
                                 onChange={(e) => setNomeUsuario(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col mb-2" style={{userSelect: "none"}}>
+                        <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-2">Email</label>
+                        
+                        <div className="flex items-center border border-gray-300 rounded p-2 focus-within:border-blue-500">
+                            <EnvelopeIcon className="w-4 h-4 text-black mr-2 flex-shrink-0"/>
+                            <input
+                                id="email"
+                                type="email"
+                                maxLength={200}
+                                placeholder="Email"
+                                className="w-full outline-none text-black text-sm"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 required
                             />
                         </div>
@@ -116,23 +174,67 @@ export default function CadastroPage() {
                         </div>
                     </div>  
 
+                    <div className="flex flex-col mb-3" style={{userSelect: "none"}}>
+                        <label htmlFor="confirmarSenha" className="text-sm font-medium text-gray-700 mb-2">Confirmar senha</label>
+                        
+                        <div className="flex items-center border border-gray-300 rounded p-2 focus-within:border-blue-500">
+                            <LockClosedIcon className="w-4 h-4 text-black mr-2 flex-shrink-0"/>
+                            <input
+                                id="confirmarSenha"
+                                type={mostraConfirmarSenha ? "text" : "password"}
+                                placeholder="Confirmar senha"
+                                className="w-full outline-none text-black text-sm"
+                                value={confirmarSenha}
+                                onChange={(e) => setConfirmarSenha(e.target.value)}
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setMostraConfirmarSenha(!mostraConfirmarSenha)}
+                                className="ml-2 focus: outline-none"
+                                >
+                                {mostraConfirmarSenha? (
+                                    <EyeSlashIcon className="w-5 h-5 text-gray-600"/>
+                                ): (
+                                    <EyeIcon className="w-5 h-5 text-gray-600"/>
+                                )}
+                            </button>
+                        </div>
+                    </div>  
+
                      {mensagem && (
                             <p className="text-center text-sm text-red-600 -mt-5 -mb-1">{mensagem}</p>
                     )} 
 
-                    <div className="flex item-center justify-between mb-1">
-                        <label className="flex items-center text-sm text-gray-700 select-none cursor-pointer">
-                            <input 
-                                type="checkbox" 
-                                checked={lembrar}
-                                onChange={(e) => setLembrar(e.target.checked)}
-                                className="mr-2 w-4 h-4 rounded border-gray-300 focus:ring-blue-500"
-                            />
-                            Lembre-me
-                        </label>
+                    <div className="flex mb-1 items-start text-sm text-gray-700" style={{userSelect: "none"}}>
+                        <input
+                            id="aceiteTermos"
+                            type="checkbox"
+                            checked={lembrar}
+                            onChange={(e) => setLembrar(e.target.checked)}
+                            className="mr-2 mt-1 w-4 h-4 rounded border-gray-300 focus:ring-blue-500"
+                            required
+                        />
 
-                        <a style={{userSelect: "none"}} href="/recuperar-senha" className="text-sm text-blue-600 hover:underline">Esqueceu a senha?</a>
+                        <label htmlFor="aceiteTermos" className="flex-1 select-none cursor-pointer">
+                            Ao criar uma conta, você concorda com os nossos{" "}
+                            <a
+                                href="/termos"
+                                className="font-bold text-blue-600 hover:underline"
+                                onClick={(e) => {
+                                    // abrir modal, navegar, etc — não altera o checkbox
+                                }}
+                            >Termos de Serviço</a>{" "}
+                            
+                            e a{" "}
+
+                            <a
+                                href="/privacidade"
+                                className="font-bold text-blue-600 hover:underline"
+                            >Política de Privacidade</a>.
+                        </label>
                     </div>
+
 
                     <button 
                         style={{userSelect: "none"}}
@@ -164,7 +266,7 @@ export default function CadastroPage() {
                     </div>
 
                     <div className="text-center mt-1" style={{userSelect: "none"}}>
-                        <p className="text-gray-600 text-xs">Não tem uma conta? <span className="font-bold text-blue-600 hover:underline cursor-pointer">Cadastrar</span></p>
+                        <p className="text-gray-600 text-xs">Ja possui uma conta? <a href="/login"><span className="font-bold text-blue-600 hover:underline cursor-pointer">Entrar</span></a></p>
                     </div>
                 </form>
             </div>

@@ -51,7 +51,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center" style={{backgroundImage: "url('/assets/background.jpg')"}}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center" style={{backgroundImage: "url('/assets/background_login.jpg')"}}>
         <div className="bg-white rounded-lg shadow-lg w-full max-w-sm overflow-hidden p-10">
 
             <div className="flex items-center justify-center gap-4 p-4 bg-white" style={{userSelect: "none"}}>
@@ -59,7 +59,7 @@ export default function LoginPage() {
                 <div className="text-left">
                     <h1 className="text-lg font-semibold leading-tight text-[#2E2B82]">
                     Ambiente de <br /> empreendedorismo <br /> e inovação
-                    </h1>
+                    </h1>   
                 </div>
             </div>
 
@@ -79,6 +79,7 @@ export default function LoginPage() {
                             <input
                                 id="nomeUsuario"
                                 type="text"
+                                maxLength={20}
                                 placeholder="Nome de usuário"
                                 className="w-full outline-none text-black text-sm"
                                 value={nomeUsuario}
@@ -164,7 +165,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="text-center mt-1" style={{userSelect: "none"}}>
-                        <p className="text-gray-600 text-xs">Não tem uma conta? <span className="font-bold text-blue-600 hover:underline cursor-pointer">Cadastrar</span></p>
+                        <p className="text-gray-600 text-xs">Não tem uma conta? <a href="/cadastro"><span className="font-bold text-blue-600 hover:underline cursor-pointer">Cadastrar</span></a></p>
                     </div>
                 </form>
             </div>
