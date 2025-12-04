@@ -62,7 +62,7 @@ export default function NewsItemPage() {
   }
 
   return (
-    <div className="bg-white py-12">
+    <div className="bg-white py-12 min-h-screen">
       <div className="container mx-auto max-w-4xl p-6">
         
         {/* Título */}
