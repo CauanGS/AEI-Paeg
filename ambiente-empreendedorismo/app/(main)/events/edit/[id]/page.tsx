@@ -197,8 +197,8 @@ export default function EditEventPage() {
         <div className="mb-6">
           <label className="block text-gray-700 font-semibold mb-2">Conteúdo Completo *</label>
           <TinyEditor
-            value={formData.content} // Certifique-se que seu TinyEditor aceita 'value' ou 'initialValue' corretamente
-            onChange={(newContent) => setFormData((prev) => ({ ...prev, content: newContent }))}
+            initialValue={formData.content}
+            onEditorChange={(newContent) => setFormData((prev) => ({ ...prev, content: newContent }))}
           />
         </div>
 
