@@ -14,6 +14,7 @@ interface ProjectData {
   description: string;
   content: string;
   image_path: string | null;
+  tags: string;
 }
 
 export default function EditProjectPage() {
@@ -22,6 +23,7 @@ export default function EditProjectPage() {
     description: '',
     content: '',
     image_path: null,
+    tags: '',
   });
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,6 +49,7 @@ export default function EditProjectPage() {
             description: data.description,
             content: data.content,
             image_path: data.image_path,
+            tags: data.tags || '',
           });
         } catch (err: any) {
           setError(err.message);
@@ -80,6 +83,7 @@ export default function EditProjectPage() {
     data.append('title', formData.title);
     data.append('description', formData.description);
     data.append('content', formData.content);
+    data.append('tags', formData.tags);
     if (file) {
       data.append('image', file);
     }
@@ -169,6 +173,24 @@ export default function EditProjectPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
               required
             />
+          </div>
+
+          <div>
+            <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
+              Tags (Categorias)
+            </label>
+            <input
+              type="text"
+              id="tags"
+              name="tags"
+              value={formData.tags}
+              onChange={handleInputChange}
+              placeholder="Ex: Design, Educação, Sustentabilidade"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Separe as categorias utilizando vírgulas.
+            </p>
           </div>
 
           <div>

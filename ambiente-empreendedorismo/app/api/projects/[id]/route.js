@@ -40,6 +40,7 @@ export async function PUT(request) {
     const title = data.get('title');
     const description = data.get('description');
     const content = data.get('content');
+    const tags = data.get('tags');
     const file = data.get('image');
 
     if (!title || !description || !content) {
@@ -67,7 +68,7 @@ export async function PUT(request) {
       dbPath = `/uploads/projects/${fileName}`;
     }
 
-    const dataToUpdate = { title, description, content };
+    const dataToUpdate = { title, description, content, tags };
     if (dbPath !== undefined) dataToUpdate.image_path = dbPath;
 
     const updatedProject = await prisma.project.update({

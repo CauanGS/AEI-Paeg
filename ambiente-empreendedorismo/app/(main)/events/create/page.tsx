@@ -64,103 +64,91 @@ export default function CreateEventPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-white">
-      <div className="container mx-auto p-8 max-w-2xl">
-        <h1 className="text-3xl font-bold text-[#2E2B82] mb-8">Criar Novo Evento</h1>
+    <div className="bg-gray-50 py-12">
+      <div className="container mx-auto max-w-3xl p-6 bg-white shadow-lg rounded-lg">
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
+        <h1 className="text-4xl font-bold text-[#2E2B82] text-center mb-8">Criar Novo Evento</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-8">
-        {/* Título */}
-        <div className="mb-6">
-          <label className="block text-black font-semibold mb-2">Título *</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Título do evento"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#2E2B82]"
-            required
-          />
-        </div>
+        {error && (
+          <p className="text-red-600 text-sm text-center">{error}</p>
+        )}
 
-        {/* Data */}
-        <div className="mb-6">
-          <label className="block text-black font-semibold mb-2">Data e Hora *</label>
-          <input
-            type="datetime-local"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#2E2B82]"
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Título do evento"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
+              required
+            />
+          </div>
 
-        {/* Local */}
-        <div className="mb-6">
-          <label className="block text-black font-semibold mb-2">Local *</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Local do evento"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#2E2B82]"
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Data e Hora</label>
+            <input
+              type="datetime-local"
+              id="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
+            />
+          </div>
 
-        {/* Descrição Curta */}
-        <div className="mb-6">
-          <label className="block text-black font-semibold mb-2">Descrição Curta *</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Descrição breve do evento (para exibição em cards)"
-            rows={3}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#2E2B82]"
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">Local</label>
+            <input
+              type="text"
+              id="location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Local do evento"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
+            />
+          </div>
 
-        {/* Conteúdo Completo com Editor */}
-        <div className="mb-6">
-          <label className="block text-black font-semibold mb-2">Conteúdo Completo *</label>
-          <TinyEditor value={content} onChange={setContent} />
-        </div>
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Descrição Curta</label>
+            <textarea
+              id="description"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Descrição breve do evento (para exibição em cards)"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
+            />
+          </div>
 
-        {/* Upload de Imagem */}
-        <div className="mb-6">
-          <label className="block text-black font-semibold mb-2">Imagem do Evento</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2"
-          />
-        </div>
+          <div>
+            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">Conteúdo</label>
+            <TinyEditor onEditorChange={(newContent) => setContent(newContent)} />
+          </div>
 
-        {/* Botões */}
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex-1 bg-[#2E2B82] text-white font-bold py-2 rounded-lg hover:bg-[#1f1c5a] disabled:opacity-50"
-          >
-            {isLoading ? 'Criando...' : 'Criar Evento'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 rounded-lg hover:bg-gray-400"
-          >
-            Cancelar
-          </button>
-        </div>
-      </form>
+          <div>
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">Imagem do Evento (Opcional)</label>
+            <input
+              type="file"
+              id="image"
+              accept="image/png, image/jpeg, image/gif"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e0e7ff] file:text-[#2E2B82] hover:file:bg-[#c7d2fe]"
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full bg-[#2E2B82] text-white px-6 py-3 rounded-md text-lg font-bold hover:bg-[#292570] transition duration-200 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {isLoading ? 'Criando...' : 'Criar Evento'}
+            </button>
+          </div>
+        </form>
+
       </div>
     </div>
   );

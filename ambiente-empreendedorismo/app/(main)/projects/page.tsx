@@ -7,6 +7,7 @@ interface ProjectItem {
   title: string;
   description: string;
   image_path: string | null;
+  tags: string | null;
 }
 
 export default function ProjectsPage() {
@@ -31,12 +32,6 @@ export default function ProjectsPage() {
         <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2E2B82] to-indigo-500 text-center mb-4">Nossos Projetos</h1>
         <p className="text-center text-gray-600 mb-4 max-w-2xl mx-auto">Coleção de projetos desenvolvidos com foco em impacto social, educação e comunidade.</p>
 
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <span className="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">Inovação</span>
-          <span className="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">Comunidade</span>
-          <span className="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">Sustentabilidade</span>
-        </div>
-
         {projects.length === 0 ? (
           <p className="text-center text-gray-500">Nenhum projeto cadastrado.</p>
         ) : (
@@ -51,10 +46,17 @@ export default function ProjectsPage() {
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">{project.title}</h3>
                     <p className="text-gray-600 text-sm mb-2 line-clamp-4">{project.description}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded">Design</span>
-                      <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded">Educação</span>
-                    </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {project.tags ? (
+                      project.tags.split(',').map((tag, index) => (
+                        <span key={index} className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded">
+                          {tag.trim()}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Geral</span>
+                    )}
+                  </div>
                   </div>
                   <div className="mt-4 flex items-center justify-between">
                     <Link href={`/projects/${project.id}`} className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md font-semibold hover:bg-indigo-50 transition">Ver Detalhes</Link>

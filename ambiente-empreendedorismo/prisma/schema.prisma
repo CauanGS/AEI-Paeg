@@ -66,6 +66,7 @@ model Project {
   image_path  String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  tags        String?
 
   @@map("projects")
 }
