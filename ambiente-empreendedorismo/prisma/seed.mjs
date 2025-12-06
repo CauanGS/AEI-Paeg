@@ -86,13 +86,64 @@ const eventsData = [
   },
 ];
 
+const projectsData = [
+  {
+    title: 'EcoDrone: Monitoramento Ambiental',
+    description: 'Drones autônomos para reflorestamento e monitoramento de áreas de preservação.',
+    content: '<p>O projeto utiliza drones impressos em 3D com material biodegradável para dispersar sementes em áreas de difícil acesso.</p>',
+    image_path: 'https://placehold.co/1200x800/16a085/ffffff?text=EcoDrone',
+  },
+  {
+    title: 'HealthTrack: Pulseira Inteligente',
+    description: 'Monitoramento de sinais vitais para idosos com alerta automático de quedas.',
+    content: '<p>Dispositivo vestível de baixo custo integrado com sistema de saúde municipal.</p>',
+    image_path: 'https://placehold.co/1200x800/c0392b/ffffff?text=HealthTrack',
+  },
+  {
+    title: 'EduGamify: Aprenda Brincando',
+    description: 'Plataforma de gamificação para ensino de matemática nas escolas públicas.',
+    content: '<p>Projeto em parceria com a Secretaria de Educação, visando aumentar o engajamento dos alunos do fundamental.</p>',
+    image_path: 'https://placehold.co/1200x800/f39c12/ffffff?text=EduGamify',
+  },
+  {
+    title: 'AgroSense: Irrigação Inteligente',
+    description: 'Sensores de solo que otimizam o uso da água na agricultura familiar.',
+    content: '<p>Redução de até 40% no consumo de água através de IoT e análise de dados em tempo real.</p>',
+    image_path: 'https://placehold.co/1200x800/27ae60/ffffff?text=AgroSense',
+  },
+];
+
+// --- DADOS DE PROGRAMAS ---
+const programsData = [
+  {
+    title: 'Programa de Incubação 2025',
+    description: 'Suporte completo para transformar sua ideia em um negócio escalável.',
+    content: '<p>O programa oferece espaço físico, mentoria, assessoria jurídica e contábil por 12 meses.</p>',
+    image_path: 'https://placehold.co/1200x800/2980b9/ffffff?text=Incubacao+2025',
+  },
+  {
+    title: 'Acelera AEI',
+    description: 'Programa intensivo de 3 meses para startups em estágio de crescimento.',
+    content: '<p>Focado em vendas, marketing digital e preparação para investimento (fundraising).</p>',
+    image_path: 'https://placehold.co/1200x800/e74c3c/ffffff?text=Acelera+AEI',
+  },
+  {
+    title: 'Mentoria para Mulheres na Tech',
+    description: 'Programa exclusivo para fomentar o empreendedorismo feminino na tecnologia.',
+    content: '<p>Conectando fundadoras experientes com novas empreendedoras para troca de vivências e apoio mútuo.</p>',
+    image_path: 'https://placehold.co/1200x800/8e44ad/ffffff?text=Mulheres+Tech',
+  },
+];
+
 async function main() {
   console.log('🌱 Iniciando script de ingestão...');
   
   // 1. Limpar dados antigos
   console.log('🧹 Limpando banco de dados...');
   await prisma.news.deleteMany({});
-  await prisma.event.deleteMany({}); // Deleta eventos antigos também
+  await prisma.event.deleteMany({});
+  await prisma.project.deleteMany({});
+  await prisma.program.deleteMany({});
 
   // 2. Criar Notícias
   console.log('📰 Criando Notícias...');
@@ -104,6 +155,18 @@ async function main() {
   console.log('📅 Criando Eventos...');
   for (const item of eventsData) {
     await prisma.event.create({ data: item });
+  }
+
+  // 4. Criar Projetos
+  console.log('🚀 Criando Projetos...');
+  for (const item of projectsData) {
+    await prisma.project.create({ data: item });
+  }
+
+  // 5. Criar Programas
+  console.log('🎓 Criando Programas...');
+  for (const item of programsData) {
+    await prisma.program.create({ data: item });
   }
   
   console.log('✅ Ingestão concluída com sucesso!');

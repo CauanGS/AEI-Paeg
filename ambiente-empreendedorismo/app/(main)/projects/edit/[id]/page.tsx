@@ -9,22 +9,18 @@ const TinyEditor = dynamic(() => import('@/components/TinyEditor'), {
   loading: () => <p>Carregando editor...</p>
 });
 
-interface EventData {
+interface ProjectData {
   title: string;
   description: string;
   content: string;
-  date: string;
-  location: string;
   image_path: string | null;
 }
 
-export default function EditEventPage() {
-  const [formData, setFormData] = useState<EventData>({
+export default function EditProjectPage() {
+  const [formData, setFormData] = useState<ProjectData>({
     title: '',
     description: '',
     content: '',
-    date: '',
-    location: '',
     image_path: null,
   });
   const [file, setFile] = useState<File | null>(null);
@@ -38,21 +34,18 @@ export default function EditEventPage() {
 
   useEffect(() => {
     if (id) {
-      const fetchEventData = async () => {
+      const fetchProjectData = async () => {
         try {
           setIsLoading(true);
-          const response = await fetch(`/api/events/${id}`);
+          const response = await fetch(`/api/projects/${id}`);
           if (!response.ok) {
-            throw new Error('Falha ao buscar dados do evento.');
+            throw new Error('Falha ao buscar dados do projeto.');
           }
           const data = await response.json();
           setFormData({
             title: data.title,
             description: data.description,
             content: data.content,
-            // Formatação necessária para o input type="datetime-local"
-            date: new Date(data.date).toISOString().slice(0, 16),
-            location: data.location,
             image_path: data.image_path,
           });
         } catch (err: any) {
@@ -61,7 +54,7 @@ export default function EditEventPage() {
           setIsLoading(false);
         }
       };
-      fetchEventData();
+      fetchProjectData();
     }
   }, [id]);
 
@@ -87,25 +80,23 @@ export default function EditEventPage() {
     data.append('title', formData.title);
     data.append('description', formData.description);
     data.append('content', formData.content);
-    data.append('date', formData.date);
-    data.append('location', formData.location);
     if (file) {
       data.append('image', file);
     }
 
     try {
-      const response = await fetch(`/api/events/${id}`, {
+      const response = await fetch(`/api/projects/${id}`, {
         method: 'PUT',
         body: data,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Falha ao atualizar evento");
+        throw new Error(errorData.error || "Falha ao atualizar projeto");
       }
 
-      alert('Evento atualizado com sucesso!');
-      router.push('/events');
+      alert('Projeto atualizado com sucesso!');
+      router.push('/projects');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -114,21 +105,21 @@ export default function EditEventPage() {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Tem certeza que deseja deletar este evento? Esta ação não pode ser desfeita.')) {
+    if (window.confirm('Tem certeza que deseja deletar este projeto? Esta ação não pode ser desfeita.')) {
       setIsSaving(true);
       setError(null);
       try {
-        const response = await fetch(`/api/events/${id}`, {
+        const response = await fetch(`/api/projects/${id}`, {
           method: 'DELETE',
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || "Falha ao deletar evento");
+          throw new Error(errorData.error || "Falha ao deletar projeto");
         }
 
-        alert('Evento deletado com sucesso!');
-        router.push('/events');
+        alert('Projeto deletado com sucesso!');
+        router.push('/projects');
       } catch (err: any) {
         setError(err.message);
         setIsSaving(false);
@@ -145,12 +136,11 @@ export default function EditEventPage() {
       <div className="container mx-auto max-w-3xl p-6 bg-white shadow-lg rounded-lg text-gray-900 bg-white">
         
         <h1 className="text-4xl font-bold text-[#2E2B82] text-center mb-8">
-          Editar Evento
+          Editar Projeto
         </h1>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          {/* Título */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
               Título
@@ -166,40 +156,6 @@ export default function EditEventPage() {
             />
           </div>
 
-          {/* Grid para Data e Local (para aproveitar melhor o espaço) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-                Data e Hora
-              </label>
-              <input
-                type="datetime-local"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-                Local
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Descrição */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
               Descrição Curta
@@ -215,7 +171,6 @@ export default function EditEventPage() {
             />
           </div>
 
-          {/* Conteúdo */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Conteúdo
@@ -226,7 +181,6 @@ export default function EditEventPage() {
             />
           </div>
           
-          {/* Imagem */}
           <div>
             <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
               Alterar Imagem (Opcional)
@@ -251,7 +205,6 @@ export default function EditEventPage() {
             <p className="text-red-600 text-sm text-center">{error}</p>
           )}
 
-          {/* Botões */}
           <div className="flex flex-col md:flex-row gap-4">
             <button
               type="submit"
