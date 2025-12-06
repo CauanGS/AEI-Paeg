@@ -1,7 +1,7 @@
 // app/about/page.tsx
 export default function AboutPage() {
   return (
-    <div className="bg-gray-50 py-12">
+    <div className="bg-gray-50 py-12 min-h-screen">
       <div className="container mx-auto max-w-4xl p-6 bg-white shadow-lg rounded-lg">
         
         <h1 className="text-4xl font-bold text-[#2E2B82] text-center mb-8">

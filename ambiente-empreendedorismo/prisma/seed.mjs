@@ -1,88 +1,175 @@
-// prisma/seed.mjs
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Dados de teste (10 notícias)
+// --- DADOS DE NOTÍCIAS ---
 const newsData = [
   {
-    title: 'Notícia Destaque 1: A Grande Inauguração',
-    description: 'Descubra como foi o evento de inauguração do novo polo de tecnologia e inovação, que promete mudar o cenário local.',
-    content: '<p>Este é o <strong>conteúdo completo</strong> da notícia destaque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>',
-    image_path: 'https://placehold.co/1200x800/2E2B82/ffffff?text=Destaque+1',
+    title: 'Parceria Internacional Confirmada',
+    description: 'AEI firma acordo com polo de inovação no Vale do Silício para intercâmbio de startups.',
+    content: '<p>Uma nova era para as nossas startups. O acordo prevê imersão de 3 meses para projetos selecionados.</p>',
+    image_path: 'https://placehold.co/1200x800/2E2B82/ffffff?text=Parceria+Internacional',
   },
   {
-    title: 'Notícia 2: Novas Parcerias Anunciadas',
-    description: 'Conheça as 5 novas empresas que se juntaram ao nosso ecossistema de inovação.',
-    content: '<p>O conteúdo da notícia 2 detalha as novas parcerias estratégicas. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+2',
+    title: 'Edital de Incubação 2025',
+    description: 'Estão abertas as inscrições para o novo ciclo de incubação de empresas de base tecnológica.',
+    content: '<p>Procuramos soluções em Agritech, Healthtech e Edtech. Confira o edital completo no nosso portal.</p>',
+    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Edital+2025',
   },
   {
-    title: 'Notícia 3: Vencedores do Hackathon',
-    description: 'Equipe "DevMasters" leva o prêmio principal com solução baseada em IA.',
-    content: '<p>A competição foi acirrada, mas a equipe DevMasters surpreendeu os jurados. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+3',
+    title: 'Startup do AEI recebe aporte milionário',
+    description: 'A "AgroSmart Solutions", incubada aqui, recebeu investimento série A de fundo de capital de risco.',
+    content: '<p>O investimento será usado para expansão na América Latina. Um orgulho para nossa comunidade!</p>',
+    image_path: 'https://placehold.co/800x600/2E2B82/ffffff?text=Investimento+Recebido',
   },
   {
-    title: 'Notícia 4: Inscrições Abertas para Programa de Aceleração',
-    description: 'Empreendedores têm até o final do mês para inscrever suas startups no programa "Acelera AEI".',
-    content: '<p>Detalhes sobre o programa de aceleração e como se inscrever. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+4',
+    title: 'Novo Laboratório de IoT Inaugurado',
+    description: 'Espaço conta com equipamentos de última geração para prototipagem de internet das coisas.',
+    content: '<p>Disponível para todos os alunos e empreendedores vinculados ao AEI mediante agendamento.</p>',
+    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Laboratorio+IoT',
   },
   {
-    title: 'Notícia 5: O Futuro do Empreendedorismo',
-    description: 'Especialista fala sobre tendências para 2026.',
-    content: '<p>Palestra inspiradora sobre as tendências do mercado. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+5',
+    title: 'Hackathon "Cidades Inteligentes" foi um sucesso',
+    description: 'Mais de 100 participantes desenvolveram soluções para mobilidade urbana no último fim de semana.',
+    content: '<p>A equipe vencedora criou um app para otimização de rotas de coleta seletiva.</p>',
+    image_path: 'https://placehold.co/800x600/2E2B82/ffffff?text=Hackathon+Vencedores',
   },
   {
-    title: 'Notícia 6: Workshop de Design Thinking',
-    description: 'Veja como foi o workshop prático de Design Thinking.',
-    content: '<p>Participantes colocaram a mão na massa. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+6',
+    title: 'Mentoria com CEO da TechGiant',
+    description: 'Nossa rodada de mentorias trouxe grandes nomes do mercado para conversar com os incubados.',
+    content: '<p>Troca de experiências valiosa sobre escala e gestão de times ágeis.</p>',
+    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Mentoria',
+  },
+];
+
+// --- DADOS DE EVENTOS ---
+const eventsData = [
+  {
+    title: 'Workshop: Pitch Perfeito',
+    description: 'Aprenda a vender sua ideia para investidores em 3 minutos.',
+    content: '<p>Técnicas de oratória e estruturação de pitch deck com especialistas.</p>',
+    date: new Date('2025-11-20T14:00:00'), // Data futura
+    location: 'Auditório Principal do AEI',
+    image_path: 'https://placehold.co/1200x800/e67e22/ffffff?text=Workshop+Pitch',
   },
   {
-    title: 'Notícia 7: Investimento Anjo',
-    description: 'Startup local recebe aporte de R$ 500 mil.',
-    content: '<p>Grande vitória para o ecossistema. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+7',
+    title: 'Café com Empreendedores',
+    description: 'Networking informal para conectar fundadores e desenvolvedores.',
+    content: '<p>Traga seu cartão de visitas e sua vontade de conectar. Café por nossa conta!</p>',
+    date: new Date('2025-11-25T09:00:00'),
+    location: 'Espaço de Convivência',
+    image_path: 'https://placehold.co/1200x800/27ae60/ffffff?text=Networking',
   },
   {
-    title: 'Notícia 8: AEI na Mídia',
-    description: 'Portal de notícias nacional destaca o crescimento do polo.',
-    content: '<p>Nosso trabalho sendo reconhecido. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+8',
+    title: 'Palestra: Inteligência Artificial nos Negócios',
+    description: 'Como a IA está transformando pequenas empresas e criando novas oportunidades.',
+    content: '<p>Palestrante convidado: Dr. Alan Turing (Homenagem).',
+    date: new Date('2025-12-05T19:00:00'),
+    location: 'Auditório Azul',
+    image_path: 'https://placehold.co/1200x800/8e44ad/ffffff?text=Palestra+IA',
   },
   {
-    title: 'Notícia 9: Novo Laboratório Aberto',
-    description: 'Conheça o novo laboratório de prototipagem rápida.',
-    content: '<p>Equipamentos de ponta disponíveis para todos. Excepteur sint occaecat cupidatat non proident.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+9',
+    title: 'Demo Day 2025',
+    description: 'O grande dia de apresentação das startups graduadas para o mercado.',
+    content: '<p>Venha conhecer as próximas grandes inovações que nasceram aqui.</p>',
+    date: new Date('2025-12-15T10:00:00'),
+    location: 'Centro de Convenções',
+    image_path: 'https://placehold.co/1200x800/c0392b/ffffff?text=Demo+Day',
   },
   {
-    title: 'Notícia 10: Evento de Networking',
-    description: 'Próxima edição do "Café com Empreendedores" já tem data marcada.',
-    content: '<p>Não perca a chance de se conectar. Sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
-    image_path: 'https://placehold.co/800x600/555555/ffffff?text=Noticia+10',
+    title: 'Curso de Modelagem de Negócios (Canvas)',
+    description: 'Tire sua ideia do papel e estruture seu modelo de negócios.',
+    content: '<p>Curso prático de 8 horas com certificação.</p>',
+    date: new Date('2026-01-10T08:00:00'),
+    location: 'Sala de Treinamento 1',
+    image_path: 'https://placehold.co/1200x800/2980b9/ffffff?text=Curso+Canvas',
+  },
+];
+
+const projectsData = [
+  {
+    title: 'EcoDrone: Monitoramento Ambiental',
+    description: 'Drones autônomos para reflorestamento e monitoramento de áreas de preservação.',
+    content: '<p>O projeto utiliza drones impressos em 3D com material biodegradável para dispersar sementes em áreas de difícil acesso.</p>',
+    image_path: 'https://placehold.co/1200x800/16a085/ffffff?text=EcoDrone',
+  },
+  {
+    title: 'HealthTrack: Pulseira Inteligente',
+    description: 'Monitoramento de sinais vitais para idosos com alerta automático de quedas.',
+    content: '<p>Dispositivo vestível de baixo custo integrado com sistema de saúde municipal.</p>',
+    image_path: 'https://placehold.co/1200x800/c0392b/ffffff?text=HealthTrack',
+  },
+  {
+    title: 'EduGamify: Aprenda Brincando',
+    description: 'Plataforma de gamificação para ensino de matemática nas escolas públicas.',
+    content: '<p>Projeto em parceria com a Secretaria de Educação, visando aumentar o engajamento dos alunos do fundamental.</p>',
+    image_path: 'https://placehold.co/1200x800/f39c12/ffffff?text=EduGamify',
+  },
+  {
+    title: 'AgroSense: Irrigação Inteligente',
+    description: 'Sensores de solo que otimizam o uso da água na agricultura familiar.',
+    content: '<p>Redução de até 40% no consumo de água através de IoT e análise de dados em tempo real.</p>',
+    image_path: 'https://placehold.co/1200x800/27ae60/ffffff?text=AgroSense',
+  },
+];
+
+// --- DADOS DE PROGRAMAS ---
+const programsData = [
+  {
+    title: 'Programa de Incubação 2025',
+    description: 'Suporte completo para transformar sua ideia em um negócio escalável.',
+    content: '<p>O programa oferece espaço físico, mentoria, assessoria jurídica e contábil por 12 meses.</p>',
+    image_path: 'https://placehold.co/1200x800/2980b9/ffffff?text=Incubacao+2025',
+  },
+  {
+    title: 'Acelera AEI',
+    description: 'Programa intensivo de 3 meses para startups em estágio de crescimento.',
+    content: '<p>Focado em vendas, marketing digital e preparação para investimento (fundraising).</p>',
+    image_path: 'https://placehold.co/1200x800/e74c3c/ffffff?text=Acelera+AEI',
+  },
+  {
+    title: 'Mentoria para Mulheres na Tech',
+    description: 'Programa exclusivo para fomentar o empreendedorismo feminino na tecnologia.',
+    content: '<p>Conectando fundadoras experientes com novas empreendedoras para troca de vivências e apoio mútuo.</p>',
+    image_path: 'https://placehold.co/1200x800/8e44ad/ffffff?text=Mulheres+Tech',
   },
 ];
 
 async function main() {
-  console.log('Iniciando script de ingestão...');
+  console.log('🌱 Iniciando script de ingestão...');
   
-  // 1. Apaga todas as notícias antigas (para o script ser re-executável)
-  console.log('Limpando notícias antigas...');
+  // 1. Limpar dados antigos
+  console.log('🧹 Limpando banco de dados...');
   await prisma.news.deleteMany({});
+  await prisma.event.deleteMany({});
+  await prisma.project.deleteMany({});
+  await prisma.program.deleteMany({});
 
-  // 2. Cria as 10 novas notícias
-  console.log('Criando 10 novas notícias...');
+  // 2. Criar Notícias
+  console.log('📰 Criando Notícias...');
   for (const item of newsData) {
-    await prisma.news.create({
-      data: item,
-    });
+    await prisma.news.create({ data: item });
+  }
+
+  // 3. Criar Eventos
+  console.log('📅 Criando Eventos...');
+  for (const item of eventsData) {
+    await prisma.event.create({ data: item });
+  }
+
+  // 4. Criar Projetos
+  console.log('🚀 Criando Projetos...');
+  for (const item of projectsData) {
+    await prisma.project.create({ data: item });
+  }
+
+  // 5. Criar Programas
+  console.log('🎓 Criando Programas...');
+  for (const item of programsData) {
+    await prisma.program.create({ data: item });
   }
   
-  console.log('Ingestão concluída com sucesso!');
+  console.log('✅ Ingestão concluída com sucesso!');
 }
 
 main()

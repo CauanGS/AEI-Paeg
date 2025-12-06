@@ -28,3 +28,58 @@ model News {
 
   @@map("news") // Mapeia para a tabela "news" no banco
 }
+
+// Modelo de Eventos
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  content     String   @db.LongText
+  date        DateTime // Data do evento
+  location    String   // Local do evento
+  image_path  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("events")
+}
+
+// Modelo de Programas
+model Program {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  content     String   @db.LongText
+  image_path  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("programs")
+}
+
+// Modelo de Projetos
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  content     String   @db.LongText
+  image_path  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  tags        String?
+
+  @@map("projects")
+}
+
+// Modelo de Empreendimentos
+model Venture {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  content     String   @db.LongText
+  image_path  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("ventures")
+}

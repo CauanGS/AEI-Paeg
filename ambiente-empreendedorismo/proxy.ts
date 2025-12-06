@@ -19,10 +19,10 @@ export function proxy(req: NextRequest) {
   }
 
   // Se o usuário NÃO está logado e tenta acessar / (home) => leva para /login
-  if (!token && pathname === "/") {
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
+  //if (!token && pathname === "/") {
+  //  url.pathname = "/login";
+  //  return NextResponse.redirect(url);
+  //}
 
   return NextResponse.next();
 }
