@@ -96,13 +96,14 @@ export default function CreateNewsPage() {
           </div>
 
           <div>
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-              Conteúdo
-            </label>
-            <TinyEditor
-              onEditorChange={(newContent) => setContent(newContent)}
-            />
-          </div>
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                Conteúdo
+              </label>
+              <TinyEditor
+                value={content} 
+                onEditorChange={setContent}
+              />
+            </div>
 
           <div>
             <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">

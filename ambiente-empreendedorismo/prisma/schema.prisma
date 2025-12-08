@@ -83,3 +83,18 @@ model Venture {
 
   @@map("ventures")
 }
+model Entrepreneurship {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  content     String   @db.LongText 
+  type        String   
+  tag         String
+  image_path  String?  
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("entrepreneurship") 
+}
+
+
