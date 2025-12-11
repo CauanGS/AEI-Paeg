@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import useAuth from '@/hooks/useAuth';
 
 const TinyEditor = dynamic(() => import('@/components/TinyEditor'), {
   ssr: false,
@@ -17,12 +18,30 @@ interface ProgramData {
 }
 
 export default function CreateProgramPage() {
+  const { loading, isLogged, role } = useAuth();
+  const router = useRouter();
+  const [allowed, setAllowed] = useState(false);
+
   const [formData, setFormData] = useState<ProgramData>({ title: '', description: '', content: '', image_path: null });
   const [file, setFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!isLogged) {
+        router.replace("/login");
+        return;
+      }
+      if (role === "ADMIN") {
+        setAllowed(true);
+      } else {
+        setAllowed(false);
+        router.replace("/notfound");
+      }
+    }
+  }, [loading, isLogged, role, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -63,6 +82,10 @@ export default function CreateProgramPage() {
     }
   };
 
+  if (!allowed) {
+    return <div className="container mx-auto p-8 text-center">Verificando permissões...</div>;
+  }
+
   return (
     <div className="bg-gray-50 py-12">
       <div className="container mx-auto max-w-3xl p-6 bg-white shadow-lg rounded-lg text-gray-900">
@@ -81,10 +104,7 @@ export default function CreateProgramPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Conteúdo</label>
-            <TinyEditor
-              value={formData.content}
-              onEditorChange={handleEditorChange}
-            />
+            <TinyEditor value={formData.content} onEditorChange={handleEditorChange} />
           </div>
 
           <div>
@@ -100,7 +120,6 @@ export default function CreateProgramPage() {
             <button type="button" onClick={() => router.back()} className="w-full md:w-auto bg-gray-300 text-gray-700 px-6 py-3 rounded-md text-lg font-bold hover:bg-gray-200 transition">Cancelar</button>
           </div>
         </form>
-
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import useAuth from '@/hooks/useAuth';
 
 const TinyEditor = dynamic(() => import('@/components/TinyEditor'), {
   ssr: false,
@@ -17,6 +18,12 @@ interface NewsData {
 }
 
 export default function EditNewsPage() {
+  const { loading, isLogged, role } = useAuth();
+  const router = useRouter();
+  const params = useParams();
+  const { id } = params;
+
+  const [allowed, setAllowed] = useState(false);
   const [formData, setFormData] = useState<NewsData>({
     title: '',
     description: '',
@@ -28,19 +35,28 @@ export default function EditNewsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const router = useRouter();
-  const params = useParams();
-  const { id } = params;
+  useEffect(() => {
+    if (!loading) {
+      if (!isLogged) {
+        router.replace("/login");
+        return;
+      }
+      if (role === "ADMIN") {
+        setAllowed(true);
+      } else {
+        setAllowed(false);
+        router.replace("/notfound");
+      }
+    }
+  }, [loading, isLogged, role, router]);
 
   useEffect(() => {
-    if (id) {
+    if (id && allowed) {
       const fetchNewsData = async () => {
         try {
           setIsLoading(true);
           const response = await fetch(`/api/news/${id}`);
-          if (!response.ok) {
-            throw new Error('Falha ao buscar dados da notícia.');
-          }
+          if (!response.ok) throw new Error('Falha ao buscar dados da notícia.');
           const data = await response.json();
           setFormData({
             title: data.title,
@@ -56,15 +72,15 @@ export default function EditNewsPage() {
       };
       fetchNewsData();
     }
-  }, [id]);
+  }, [id, allowed]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleEditorChange = (content: string) => {
-    setFormData((prev) => ({ ...prev, content }));
+    setFormData(prev => ({ ...prev, content }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,21 +96,14 @@ export default function EditNewsPage() {
     data.append('title', formData.title);
     data.append('description', formData.description);
     data.append('content', formData.content);
-    if (file) {
-      data.append('image', file);
-    }
+    if (file) data.append('image', file);
 
     try {
-      const response = await fetch(`/api/news/${id}`, {
-        method: 'PUT',
-        body: data,
-      });
-
+      const response = await fetch(`/api/news/${id}`, { method: 'PUT', body: data });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Falha ao atualizar notícia");
       }
-
       alert('Notícia atualizada com sucesso!');
       router.push('/news');
     } catch (err: any) {
@@ -109,15 +118,11 @@ export default function EditNewsPage() {
       setIsSaving(true);
       setError(null);
       try {
-        const response = await fetch(`/api/news/${id}`, {
-          method: 'DELETE',
-        });
-
+        const response = await fetch(`/api/news/${id}`, { method: 'DELETE' });
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || "Falha ao deletar notícia");
         }
-
         alert('Notícia deletada com sucesso!');
         router.push('/news');
       } catch (err: any) {
@@ -127,9 +132,8 @@ export default function EditNewsPage() {
     }
   };
 
-  if (isLoading) {
-    return <div className="container mx-auto p-8 text-center">Carregando dados...</div>;
-  }
+  if (!allowed) return <div className="container mx-auto p-8 text-center">Verificando permissões...</div>;
+  if (isLoading) return <div className="container mx-auto p-8 text-center">Carregando dados...</div>;
 
   return (
     <div className="bg-gray-50 py-12">

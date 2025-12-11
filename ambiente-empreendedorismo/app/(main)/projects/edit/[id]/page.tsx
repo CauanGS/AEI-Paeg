@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import useAuth from '@/hooks/useAuth';
 
 const TinyEditor = dynamic(() => import('@/components/TinyEditor'), {
   ssr: false,
@@ -18,6 +19,12 @@ interface ProjectData {
 }
 
 export default function EditProjectPage() {
+  const { loading, isLogged, role } = useAuth();
+  const router = useRouter();
+  const params = useParams();
+  const { id } = params;
+
+  const [allowed, setAllowed] = useState(false);
   const [formData, setFormData] = useState<ProjectData>({
     title: '',
     description: '',
@@ -30,19 +37,28 @@ export default function EditProjectPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const router = useRouter();
-  const params = useParams();
-  const { id } = params;
+  useEffect(() => {
+    if (!loading) {
+      if (!isLogged) {
+        router.replace("/login");
+        return;
+      }
+      if (role === "ADMIN") {
+        setAllowed(true);
+      } else {
+        setAllowed(false);
+        router.replace("/notfound");
+      }
+    }
+  }, [loading, isLogged, role, router]);
 
   useEffect(() => {
-    if (id) {
+    if (id && allowed) {
       const fetchProjectData = async () => {
         try {
           setIsLoading(true);
           const response = await fetch(`/api/projects/${id}`);
-          if (!response.ok) {
-            throw new Error('Falha ao buscar dados do projeto.');
-          }
+          if (!response.ok) throw new Error('Falha ao buscar dados do projeto.');
           const data = await response.json();
           setFormData({
             title: data.title,
@@ -59,7 +75,7 @@ export default function EditProjectPage() {
       };
       fetchProjectData();
     }
-  }, [id]);
+  }, [id, allowed]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -84,21 +100,14 @@ export default function EditProjectPage() {
     data.append('description', formData.description);
     data.append('content', formData.content);
     data.append('tags', formData.tags);
-    if (file) {
-      data.append('image', file);
-    }
+    if (file) data.append('image', file);
 
     try {
-      const response = await fetch(`/api/projects/${id}`, {
-        method: 'PUT',
-        body: data,
-      });
-
+      const response = await fetch(`/api/projects/${id}`, { method: 'PUT', body: data });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Falha ao atualizar projeto");
       }
-
       alert('Projeto atualizado com sucesso!');
       router.push('/projects');
     } catch (err: any) {
@@ -113,15 +122,11 @@ export default function EditProjectPage() {
       setIsSaving(true);
       setError(null);
       try {
-        const response = await fetch(`/api/projects/${id}`, {
-          method: 'DELETE',
-        });
-
+        const response = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || "Falha ao deletar projeto");
         }
-
         alert('Projeto deletado com sucesso!');
         router.push('/projects');
       } catch (err: any) {
@@ -131,9 +136,8 @@ export default function EditProjectPage() {
     }
   };
 
-  if (isLoading) {
-    return <div className="container mx-auto p-8 text-center">Carregando dados...</div>;
-  }
+  if (!allowed) return <div className="container mx-auto p-8 text-center">Verificando permissões...</div>;
+  if (isLoading) return <div className="container mx-auto p-8 text-center">Carregando dados...</div>;
 
   return (
     <div className="bg-gray-50 py-12">
@@ -197,7 +201,7 @@ export default function EditProjectPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Conteúdo
             </label>
-             <TinyEditor
+              <TinyEditor
               value={formData.content}
               onEditorChange={handleEditorChange}
             />

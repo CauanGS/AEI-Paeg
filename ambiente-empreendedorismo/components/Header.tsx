@@ -2,12 +2,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [logged, setLogged] = useState<boolean | null>(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => setLogged(data.isLogged))
+      .catch(() => setLogged(false));
+  }, []);
+
+  if (logged === null) return null;
 
   const isActive = (path: string) =>
     pathname === path
@@ -124,15 +134,16 @@ export default function Header() {
           </Link>
         </div>
 
-
-        {/* LOGIN DESKTOP */}
+        {/* LOGIN DESKTOP — aparece só se NÃO estiver logado */}
         <div className="hidden lg:block">
-          <Link
-            href="/login"
-            className="bg-[#2E2B82] text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-[#292570]"
-          >
-            Login
-          </Link>
+          {!logged && (
+            <Link
+              href="/login"
+              className="bg-[#2E2B82] text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-[#292570]"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
       </nav>
@@ -149,13 +160,16 @@ export default function Header() {
           <Link href="/entrepreneurship" onClick={() => setIsMenuOpen(false)} className={isActive("/entrepreneurship")}>Empreendimentos</Link>
           <Link href="/contact" onClick={() => setIsMenuOpen(false)} className={isActive("/contact")}>Contato</Link>
 
-          <Link
-            href="/login"
-            onClick={() => setIsMenuOpen(false)}
-            className="w-11/12 text-center border-2 border-[#2E2B82] text-[#2E2B82] py-2 rounded-lg font-semibold hover:bg-[#2E2B82] hover:text-white transition"
-          >
-            Login
-          </Link>
+          {/* LOGIN MOBILE — só aparece se NÃO estiver logado */}
+          {!logged && (
+            <Link
+              href="/login"
+              onClick={() => setIsMenuOpen(false)}
+              className="w-11/12 text-center border-2 border-[#2E2B82] text-[#2E2B82] py-2 rounded-lg font-semibold hover:bg-[#2E2B82] hover:text-white transition"
+            >
+              Login
+            </Link>
+          )}
 
         </div>
       )}

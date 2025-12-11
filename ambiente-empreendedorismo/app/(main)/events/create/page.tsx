@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import useAuth from "@/hooks/useAuth";
 
 const TinyEditor = dynamic(() => import('@/components/TinyEditor'), {
   ssr: false,
@@ -10,6 +11,9 @@ const TinyEditor = dynamic(() => import('@/components/TinyEditor'), {
 });
 
 export default function CreateEventPage() {
+  const { loading, isLogged, role } = useAuth();
+  const router = useRouter();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
@@ -19,7 +23,30 @@ export default function CreateEventPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!loading) {
+      if (!isLogged) {
+        router.replace("/login");
+        return;
+      }
+      if (role === "ADMIN") {
+        setAllowed(true);
+      } else {
+        setAllowed(false);
+        router.replace("/notfound");
+      }
+    }
+  }, [loading, isLogged, role, router]);
+
+  if (loading || allowed === null) {
+    return (
+      <div className="py-20 text-center text-lg text-gray-600">
+        Verificando permissão...
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,10 +65,7 @@ export default function CreateEventPage() {
     formData.append('content', content);
     formData.append('location', location);
     formData.append('date', date);
-
-    if (file) {
-      formData.append('image', file);
-    }
+    if (file) formData.append('image', file);
 
     try {
       const response = await fetch('/api/events', {
@@ -74,6 +98,7 @@ export default function CreateEventPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Título</label>
             <input
@@ -87,27 +112,31 @@ export default function CreateEventPage() {
             />
           </div>
 
-          <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Data e Hora</label>
-            <input
-              type="datetime-local"
-              id="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Data e Hora</label>
+              <input
+                type="datetime-local"
+                id="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full text-black px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+                required
+              />
+            </div>
 
-          <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">Local</label>
-            <input
-              type="text"
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Local do evento"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
-            />
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">Local</label>
+              <input
+                type="text"
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Local do evento"
+                className="w-full text-black px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+                required
+              />
+            </div>
           </div>
 
           <div>
@@ -119,15 +148,16 @@ export default function CreateEventPage() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Descrição breve do evento (para exibição em cards)"
               className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-900 bg-white"
+              required
             />
           </div>
 
           <div>
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">Conteúdo</label>
             <TinyEditor
-                value={content} 
-                onEditorChange={setContent}
-              />
+              value={content} 
+              onEditorChange={setContent}
+            />
           </div>
 
           <div>
@@ -137,7 +167,7 @@ export default function CreateEventPage() {
               id="image"
               accept="image/png, image/jpeg, image/gif"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e0e7ff] file:text-[#2E2B82] hover:file:bg-[#c7d2fe]"
+              className="w-full text-black px-3 py-2 border border-gray-300 rounded-md shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e0e7ff] file:text-[#2E2B82] hover:file:bg-[#c7d2fe]"
             />
           </div>
 
@@ -151,7 +181,6 @@ export default function CreateEventPage() {
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );

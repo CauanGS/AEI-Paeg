@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import useAuth from "@/hooks/useAuth";
 
 const TinyEditor = dynamic(() => import('@/components/TinyEditor'), {
   ssr: false,
@@ -19,6 +20,11 @@ interface EntrepreneurshipData {
 }
 
 export default function EditEntrepreneurshipPage() {
+  const { loading, isLogged, role } = useAuth();
+  const router = useRouter();
+  const params = useParams();
+  const { id } = params;
+
   const [formData, setFormData] = useState<EntrepreneurshipData>({
     title: '',
     description: '',
@@ -31,51 +37,57 @@ export default function EditEntrepreneurshipPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [allowed, setAllowed] = useState<boolean | null>(null);
 
-  const router = useRouter();
-  const params = useParams();
-  const { id } = params;
-
-  const incubadaTags = [
-      "Pré-incubação",
-      "Incubação",
-      "Pós-incubação"
-    ];
-
-    const formadaTags = [
-      "Abertura",
-      "Crescimento",
-      "Maturidade",
-      "Transição"
-    ];
+  const incubadaTags = ["Pré-incubação","Incubação","Pós-incubação"];
+  const formadaTags = ["Abertura","Crescimento","Maturidade","Transição"];
 
   useEffect(() => {
-    if (id) {
-      const fetchEntrepreneurship = async () => {
-        try {
-          setIsLoading(true);
-          const response = await fetch(`/api/entrepreneurship/${id}`);
-          if (!response.ok) {
-            throw new Error('Falha ao buscar dados do empreedimento.');
-          }
-          const data = await response.json();
-          setFormData({
-            title: data.title,
-            description: data.description,
-            content: data.content,
-            type: data.type,
-            tag: data.tag,
-            image_path: data.image_path,
-          });
-        } catch (err: any) {
-          setError(err.message);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchEntrepreneurship();
+    if (!loading) {
+      if (!isLogged) {
+        router.replace("/login");
+        return;
+      }
+      if (role === "ADMIN") {
+        setAllowed(true);
+      } else {
+        setAllowed(false);
+        router.replace("/notfound");
+      }
     }
-  }, [id]);
+  }, [loading, isLogged, role, router]);
+
+  useEffect(() => {
+    if (!allowed || !id) return;
+
+    const fetchEntrepreneurship = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/entrepreneurship/${id}`);
+        if (!response.ok) throw new Error('Falha ao buscar dados do empreendimento.');
+        const data = await response.json();
+        setFormData({
+          title: data.title,
+          description: data.description,
+          content: data.content,
+          type: data.type,
+          tag: data.tag,
+          image_path: data.image_path,
+        });
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEntrepreneurship();
+  }, [allowed, id]);
+
+  if (loading || allowed === null || isLoading) {
+    return <div className="container mx-auto p-8 text-center">Carregando dados...</div>;
+  }
+
+  if (!allowed) return null;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -101,21 +113,17 @@ export default function EditEntrepreneurshipPage() {
     data.append('content', formData.content);
     data.append('type', formData.type);
     data.append('tag', formData.tag);
-    if (file) {
-      data.append('image', file);
-    }
+    if (file) data.append('image', file);
 
     try {
       const response = await fetch(`/api/entrepreneurship/${id}`, {
         method: 'PUT',
         body: data,
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Falha ao atualizar empreendimento");
       }
-
       alert('Empreendimento atualizado com sucesso!');
       router.push('/entrepreneurship');
     } catch (err: any) {
@@ -126,46 +134,34 @@ export default function EditEntrepreneurshipPage() {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Tem certeza que deseja deletar esse empreedimento? Esta ação não pode ser desfeita.')) {
-      setIsSaving(true);
-      setError(null);
-      try {
-        const response = await fetch(`/api/entrepreneurship/${id}`, {
-          method: 'DELETE',
-        });
+    if (!window.confirm('Tem certeza que deseja deletar esse empreendimento?')) return;
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Falha ao deletar empreendimento");
-        }
-
-        alert('Empreedimento deletado com sucesso!');
-        router.push('/entrepreneurship');
-      } catch (err: any) {
-        setError(err.message);
-        setIsSaving(false);
+    setIsSaving(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/entrepreneurship/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Falha ao deletar empreendimento");
       }
+      alert('Empreendimento deletado com sucesso!');
+      router.push('/entrepreneurship');
+    } catch (err: any) {
+      setError(err.message);
+      setIsSaving(false);
     }
   };
-
-  if (isLoading) {
-    return <div className="container mx-auto p-8 text-center">Carregando dados...</div>;
-  }
 
   return (
     <div className="bg-gray-50 py-12">
       <div className="container mx-auto max-w-3xl p-6 bg-white shadow-lg rounded-lg">
-        
         <h1 className="text-4xl font-bold text-[#2E2B82] text-center mb-8">
-          Editar Empreedimento
+          Editar Empreendimento
         </h1>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-              Título
-            </label>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Título</label>
             <input
               type="text"
               id="title"
@@ -178,9 +174,7 @@ export default function EditEntrepreneurshipPage() {
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição Curta
-            </label>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Descrição Curta</label>
             <textarea
               id="description"
               name="description"
@@ -193,26 +187,16 @@ export default function EditEntrepreneurshipPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Conteúdo
-            </label>
-            <TinyEditor
-              value={formData.content}
-              onEditorChange={handleEditorChange}
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Conteúdo</label>
+            <TinyEditor value={formData.content} onEditorChange={handleEditorChange} />
           </div>
-          
-          <div>
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-              Tipo de Empreendimento
-            </label>
 
+          <div>
+            <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">Tipo de Empreendimento</label>
             <select
               id="type"
               value={formData.type}
-              onChange={(e) => {
-                setFormData({ ...formData, type: e.target.value, tag: "" });
-              }}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value, tag: "" })}
               className="text-black w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
               required
             >
@@ -223,42 +207,24 @@ export default function EditEntrepreneurshipPage() {
           </div>
 
           <div>
-            <label htmlFor="tag" className="block text-sm font-medium text-gray-700 mb-1">
-              Estágio (Tag)
-            </label>
-
+            <label htmlFor="tag" className="block text-sm font-medium text-gray-700 mb-1">Estágio (Tag)</label>
             <select
               id="tag"
               value={formData.tag}
               onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
               disabled={!formData.type}
               className={`text-black w-full px-4 py-2 border rounded-md shadow-sm
-                ${!formData.type ? "bg-gray-200 cursor-not-allowed" : "border-gray-300 focus:ring-[#2E2B82] focus:border-[#2E2B82]"}
-              `}
+                ${!formData.type ? "bg-gray-200 cursor-not-allowed" : "border-gray-300 focus:ring-[#2E2B82] focus:border-[#2E2B82]"}`}
               required
             >
               <option value="">Selecione uma tag...</option>
-
-              {formData.type === "INCUBADA" &&
-                incubadaTags.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-
-              {formData.type === "FORMADA" &&
-                formadaTags.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
+              {formData.type === "INCUBADA" && incubadaTags.map(t => <option key={t} value={t}>{t}</option>)}
+              {formData.type === "FORMADA" && formadaTags.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
 
           <div>
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-              Alterar Imagem (Opcional)
-            </label>
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">Alterar Imagem (Opcional)</label>
             {formData.image_path && !file && (
               <div className="my-2">
                 <p className="text-sm text-gray-500 mb-1">Imagem atual:</p>
@@ -274,10 +240,8 @@ export default function EditEntrepreneurshipPage() {
             />
             <p className="text-xs text-gray-500 mt-1">Selecione uma nova imagem apenas se desejar substituí-la.</p>
           </div>
-          
-          {error && (
-            <p className="text-red-600 text-sm text-center">{error}</p>
-          )}
+
+          {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
           <div className="flex flex-col md:flex-row gap-4">
             <button
@@ -297,7 +261,6 @@ export default function EditEntrepreneurshipPage() {
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );
