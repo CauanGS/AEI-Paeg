@@ -151,7 +151,7 @@ export default function EditNewsPage() {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+              className="w-full text-black px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
               required
             />
           </div>
@@ -166,7 +166,7 @@ export default function EditNewsPage() {
               rows={3}
               value={formData.description}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+              className="w-full text-black px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
               required
             />
           </div>
@@ -176,7 +176,7 @@ export default function EditNewsPage() {
               Conteúdo
             </label>
             <TinyEditor
-              initialValue={formData.content}
+              value={formData.content}
               onEditorChange={handleEditorChange}
             />
           </div>
@@ -196,7 +196,7 @@ export default function EditNewsPage() {
               id="image"
               accept="image/png, image/jpeg, image/gif"
               onChange={handleFileChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e0e7ff] file:text-[#2E2B82] hover:file:bg-[#c7d2fe]"
+              className="w-full text-black px-3 py-2 border border-gray-300 rounded-md shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e0e7ff] file:text-[#2E2B82] hover:file:bg-[#c7d2fe]"
             />
             <p className="text-xs text-gray-500 mt-1">Selecione uma nova imagem apenas se desejar substituí-la.</p>
           </div>

@@ -124,7 +124,10 @@ export default function CreateEventPage() {
 
           <div>
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">Conteúdo</label>
-            <TinyEditor onEditorChange={(newContent) => setContent(newContent)} />
+            <TinyEditor
+                value={content} 
+                onEditorChange={setContent}
+              />
           </div>
 
           <div>

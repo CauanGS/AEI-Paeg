@@ -92,7 +92,7 @@
         <div className="container mx-auto max-w-3xl p-6 bg-white shadow-lg rounded-lg">
           
           <h1 className="text-4xl font-bold text-[#2E2B82] text-center mb-8">
-            Criar Novo Empreendimento
+            Criar Empreendimento
           </h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -107,6 +107,7 @@
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="text-black w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+                placeholder="Título do empreendimento"
                 required
               />
             </div>
@@ -121,6 +122,7 @@
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="text-black w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+                placeholder="Descrição breve do empreedimento (para exibição em cards)"
                 required
               />
             </div>

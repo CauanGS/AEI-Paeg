@@ -31,6 +31,7 @@ export default function EditEventPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const[content, setContent] = useState('');
 
   const router = useRouter();
   const params = useParams();
@@ -42,19 +43,22 @@ export default function EditEventPage() {
         try {
           setIsLoading(true);
           const response = await fetch(`/api/events/${id}`);
-          if (!response.ok) {
-            throw new Error('Falha ao buscar dados do evento.');
-          }
+          if (!response.ok) throw new Error('Falha ao buscar dados do evento.');
+          
           const data = await response.json();
+
           setFormData({
             title: data.title,
             description: data.description,
             content: data.content,
-            // Formatação necessária para o input type="datetime-local"
             date: new Date(data.date).toISOString().slice(0, 16),
             location: data.location,
             image_path: data.image_path,
           });
+
+          // 🔥 ADICIONE ISTO
+          setContent(data.content);
+
         } catch (err: any) {
           setError(err.message);
         } finally {
@@ -70,8 +74,9 @@ export default function EditEventPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEditorChange = (content: string) => {
-    setFormData((prev) => ({ ...prev, content }));
+  const handleEditorChange = (value: string) => {
+    setContent(value);
+    setFormData((prev) => ({ ...prev, content: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,7 +226,7 @@ export default function EditEventPage() {
               Conteúdo
             </label>
             <TinyEditor
-              initialValue={formData.content}
+              value={content}
               onEditorChange={handleEditorChange}
             />
           </div>

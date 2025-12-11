@@ -1,4 +1,9 @@
-// app/about/page.tsx
+export const metadata = {
+  title: "Sobre o AEI",
+  description: "Página com informações sobre o AEI",
+};
+
+
 export default function AboutPage() {
   return (
     <div className="bg-gray-50 py-12 min-h-screen">

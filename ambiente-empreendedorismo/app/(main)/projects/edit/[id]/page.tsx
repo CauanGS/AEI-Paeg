@@ -197,8 +197,8 @@ export default function EditProjectPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Conteúdo
             </label>
-            <TinyEditor
-              initialValue={formData.content}
+             <TinyEditor
+              value={formData.content}
               onEditorChange={handleEditorChange}
             />
           </div>

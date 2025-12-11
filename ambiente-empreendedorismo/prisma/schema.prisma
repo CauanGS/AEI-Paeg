@@ -71,18 +71,7 @@ model Project {
   @@map("projects")
 }
 
-// Modelo de Empreendimentos
-model Venture {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String   @db.Text
-  content     String   @db.LongText
-  image_path  String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  @@map("ventures")
-}
+//Modelo de Empreendimentos
 model Entrepreneurship {
   id          Int      @id @default(autoincrement())
   title       String

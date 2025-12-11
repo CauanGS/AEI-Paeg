@@ -19,11 +19,13 @@ export async function GET() {
 
 export async function POST(request) {
   let dbPath = null;
+
   try {
     const data = await request.formData();
     const title = data.get('title');
     const description = data.get('description');
     const content = data.get('content');
+    const tags = data.get('tags'); 
     const file = data.get('image');
 
     if (!title || !description || !content) {
@@ -33,14 +35,15 @@ export async function POST(request) {
     if (file && file.size > 0) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      // Salva na pasta 'projects'
+
       const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'projects');
       await fs.promises.mkdir(uploadDir, { recursive: true });
-      
+
       const fileName = `${Date.now()}_${file.name}`;
       const filePath = path.join(uploadDir, fileName);
+
       await fs.promises.writeFile(filePath, buffer);
-      
+
       dbPath = `/uploads/projects/${fileName}`;
     }
 
@@ -50,6 +53,7 @@ export async function POST(request) {
         description,
         content,
         image_path: dbPath,
+        tags: tags || null,
       },
     });
 

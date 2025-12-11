@@ -18,7 +18,7 @@ const newsData = [
   },
   {
     title: 'Startup do AEI recebe aporte milionário',
-    description: 'A "AgroSmart Solutions", incubada aqui, recebeu investimento série A de fundo de capital de risco.',
+    description: 'A "AgroSmart Solutions", INCUBADA aqui, recebeu investimento série A de fundo de capital de risco.',
     content: '<p>O investimento será usado para expansão na América Latina. Um orgulho para nossa comunidade!</p>',
     image_path: 'https://placehold.co/800x600/2E2B82/ffffff?text=Investimento+Recebido',
   },
@@ -135,6 +135,57 @@ const programsData = [
   },
 ];
 
+const entrepreneurshipData = [
+  {
+    title: 'BioSens AgroTech',
+    description: 'Sensores biológicos de monitoramento de pragas para agricultura sustentável.',
+    content: '<p>A BioSens desenvolve sensores biológicos capazes de detectar pragas em estágios iniciais, reduzindo o uso de agrotóxicos e aumentando a eficiência da produção agrícola.</p>',
+    type: 'INCUBADA',
+    tag: 'Agrotech',
+    image_path: 'https://placehold.co/1200x800/27ae60/ffffff?text=BioSens+AgroTech',
+  },
+  {
+    title: 'TrackPet AI',
+    description: 'Coleira inteligente para monitoramento de saúde animal.',
+    content: '<p>A TrackPet utiliza inteligência artificial para detectar padrões anormais de comportamento em pets, enviando alertas automáticos ao tutor.</p>',
+    type: 'INCUBADA',
+    tag: 'Healthtech',
+    image_path: 'https://placehold.co/1200x800/c0392b/ffffff?text=TrackPet+AI',
+  },
+  {
+    title: 'CleanWave Energy',
+    description: 'Microgeração elétrica a partir de vibrações de estruturas urbanas.',
+    content: '<p>A CleanWave desenvolve dispositivos capazes de converter vibrações de pontes, ruas e prédios em energia limpa para dispositivos de baixa potência.</p>',
+    type: 'INCUBADA',
+    tag: 'Energia',
+    image_path: 'https://placehold.co/1200x800/2980b9/ffffff?text=CleanWave+Energy',
+  },
+  {
+    title: 'SmartGarden Pro',
+    description: 'Sistema inteligente de irrigação automática para jardins residenciais.',
+    content: '<p>A SmartGarden oferece uma solução completa de irrigação baseada em sensores de umidade e previsão do tempo, reduzindo desperdício de água.</p>',
+    type: 'FORMADA',
+    tag: 'Automação',
+    image_path: 'https://placehold.co/1200x800/8e44ad/ffffff?text=SmartGarden+Pro',
+  },
+  {
+    title: 'FlyVision Drones',
+    description: 'Drones de inspeção aérea para indústrias e agricultura.',
+    content: '<p>A FlyVision desenvolve drones autônomos equipados com câmeras térmicas e LIDAR para inspeções de difícil acesso.</p>',
+    type: 'FORMADA',
+    tag: 'Drones',
+    image_path: 'https://placehold.co/1200x800/2E2B82/ffffff?text=FlyVision+Drones',
+  },
+  {
+    title: 'EduFuture Labs',
+    description: 'Laboratórios virtuais gamificados para escolas públicas.',
+    content: '<p>A EduFuture Labs cria experiências educacionais interativas em 3D para auxiliar no ensino de ciências e matemática.</p>',
+    type: 'FORMADA',
+    tag: 'Edtech',
+    image_path: 'https://placehold.co/1200x800/f39c12/ffffff?text=EduFuture+Labs',
+  },
+];
+
 async function main() {
   console.log('🌱 Iniciando script de ingestão...');
   
@@ -167,6 +218,12 @@ async function main() {
   console.log('🎓 Criando Programas...');
   for (const item of programsData) {
     await prisma.program.create({ data: item });
+  }
+
+  // 6. Criar Empreendimentos
+  console.log('🏢 Criando Empreendimentos...');
+  for (const item of entrepreneurshipData) {
+    await prisma.entrepreneurship.create({ data: item });
   }
   
   console.log('✅ Ingestão concluída com sucesso!');
