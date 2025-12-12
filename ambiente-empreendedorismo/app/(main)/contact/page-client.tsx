@@ -1,5 +1,4 @@
-// app/contact/page.tsx
-"use client"; // Necessário para usar o formulário, mesmo que ainda não envie
+"use client";
 
 import { useState } from 'react';
 
@@ -8,12 +7,39 @@ export default function ContactPage() {
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
-  // Por enquanto, o envio não fará nada, 
-  // já que o backend é responsabilidade do seu parceiro.
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Funcionalidade de envio de formulário ainda não implementada.');
+    setLoading(true);
+    setStatus(null);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+
+      if (response.ok) {
+        setStatus({ type: 'success', message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.' });
+        setName('');
+        setEmail('');
+        setSubject('');
+        setMessage('');
+      } else {
+        const data = await response.json();
+        setStatus({ type: 'error', message: data.error || 'Ocorreu um erro ao enviar a mensagem.' });
+      }
+    } catch (error) {
+      setStatus({ type: 'error', message: 'Erro de conexão. Tente novamente mais tarde.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,6 +54,12 @@ export default function ContactPage() {
           Tem alguma dúvida, sugestão ou proposta? Preencha o formulário abaixo.
         </p>
 
+        {status && (
+          <div className={`mb-6 p-4 rounded-md ${status.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            {status.message}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* Campo Nome */}
@@ -40,8 +72,9 @@ export default function ContactPage() {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-700"
               required
+              disabled={loading}
             />
           </div>
 
@@ -55,8 +88,9 @@ export default function ContactPage() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-700"
               required
+              disabled={loading}
             />
           </div>
 
@@ -70,8 +104,9 @@ export default function ContactPage() {
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-700"
               required
+              disabled={loading}
             />
           </div>
 
@@ -85,8 +120,9 @@ export default function ContactPage() {
               rows={5}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#2E2B82] focus:border-[#2E2B82] text-gray-700"
               required
+              disabled={loading}
             />
           </div>
 
@@ -94,9 +130,10 @@ export default function ContactPage() {
           <div>
             <button
               type="submit"
-              className="w-full bg-[#2E2B82] text-white px-6 py-3 rounded-md text-lg font-bold hover:bg-[#292570] transition duration-200"
+              disabled={loading}
+              className={`w-full bg-[#2E2B82] text-white px-6 py-3 rounded-md text-lg font-bold transition duration-200 ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#292570]'}`}
             >
-              Enviar Mensagem
+              {loading ? 'Enviando...' : 'Enviar Mensagem'}
             </button>
           </div>
         </form>
