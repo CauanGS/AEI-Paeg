@@ -35,9 +35,7 @@
 
     if (isLoading) {
         return (
-        <div className="container mx-auto p-8 text-center">
-            Carregando empreendimentos...
-        </div>
+          <div className="py-20 text-center text-lg text-gray-600 bg-gray-50 min-h-screen"></div>
         );
     }
 

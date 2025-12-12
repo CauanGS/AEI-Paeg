@@ -24,7 +24,7 @@ export default function ProjectsPage() {
       .catch(err => console.error(err));
   }, []);
 
-  if (isLoading) return <div className="text-center p-10">Carregando projetos...</div>;
+  if (isLoading) return <div className="py-20 text-center text-lg text-gray-600 bg-gray-50 min-h-screen"></div>;
 
   return (
     <div className="bg-gradient-to-br from-white to-sky-50 py-16 min-h-screen">

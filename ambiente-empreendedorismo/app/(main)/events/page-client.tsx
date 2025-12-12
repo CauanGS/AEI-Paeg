@@ -26,7 +26,7 @@ export default function EventsPage() {
       .catch(err => console.error(err));
   }, []);
 
-  if (isLoading) return <div className="text-center p-10">Carregando eventos...</div>;
+  if (isLoading) return <div className="py-20 text-center text-lg text-gray-600 bg-gray-50 min-h-screen"></div>;
 
   return (
     <div className="bg-gray-50 py-12 min-h-screen">
