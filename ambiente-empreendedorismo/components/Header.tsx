@@ -3,19 +3,29 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [logged, setLogged] = useState<boolean | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
+  // Verifica login
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => setLogged(data.isLogged))
       .catch(() => setLogged(false));
   }, []);
+
+  // LOGOUT
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+
+    setLogged(false);
+    router.replace("/login");
+  };
 
   if (logged === null) return null;
 
@@ -61,8 +71,7 @@ export default function Header() {
             className={`relative after:content-[''] after:absolute after:left-0 after:-bottom-1 
               after:h-[2px] after:w-full after:bg-[#2E2B82] after:scale-x-0 
               after:transition-transform after:duration-300 hover:after:scale-x-100
-              ${pathname === "/about" ? "text-[#2E2B82] font-bold" : "text-gray-700"}
-            `}
+              ${pathname === "/about" ? "text-[#2E2B82] font-bold" : "text-gray-700"}`}
           >
             Sobre
           </Link>
@@ -72,8 +81,7 @@ export default function Header() {
             className={`relative after:content-[''] after:absolute after:left-0 after:-bottom-1 
               after:h-[2px] after:w-full after:bg-[#2E2B82] after:scale-x-0 
               after:transition-transform after:duration-300 hover:after:scale-x-100
-              ${pathname === "/events" ? "text-[#2E2B82] font-bold" : "text-gray-700"}
-            `}
+              ${pathname === "/events" ? "text-[#2E2B82] font-bold" : "text-gray-700"}`}
           >
             Eventos
           </Link>
@@ -83,8 +91,7 @@ export default function Header() {
             className={`relative after:content-[''] after:absolute after:left-0 after:-bottom-1 
               after:h-[2px] after:w-full after:bg-[#2E2B82] after:scale-x-0 
               after:transition-transform after:duration-300 hover:after:scale-x-100
-              ${pathname === "/programs" ? "text-[#2E2B82] font-bold" : "text-gray-700"}
-            `}
+              ${pathname === "/programs" ? "text-[#2E2B82] font-bold" : "text-gray-700"}`}
           >
             Programas
           </Link>
@@ -94,8 +101,7 @@ export default function Header() {
             className={`relative after:content-[''] after:absolute after:left-0 after:-bottom-1 
               after:h-[2px] after:w-full after:bg-[#2E2B82] after:scale-x-0 
               after:transition-transform after:duration-300 hover:after:scale-x-100
-              ${pathname === "/projects" ? "text-[#2E2B82] font-bold" : "text-gray-700"}
-            `}
+              ${pathname === "/projects" ? "text-[#2E2B82] font-bold" : "text-gray-700"}`}
           >
             Projetos
           </Link>
@@ -105,8 +111,7 @@ export default function Header() {
             className={`relative after:content-[''] after:absolute after:left-0 after:-bottom-1 
               after:h-[2px] after:w-full after:bg-[#2E2B82] after:scale-x-0 
               after:transition-transform after:duration-300 hover:after:scale-x-100
-              ${pathname === "/news" ? "text-[#2E2B82] font-bold" : "text-gray-700"}
-            `}
+              ${pathname === "/news" ? "text-[#2E2B82] font-bold" : "text-gray-700"}`}
           >
             Notícias
           </Link>
@@ -116,8 +121,7 @@ export default function Header() {
             className={`relative after:content-[''] after:absolute after:left-0 after:-bottom-1 
               after:h-[2px] after:w-full after:bg-[#2E2B82] after:scale-x-0 
               after:transition-transform after:duration-300 hover:after:scale-x-100
-              ${pathname === "/entrepreneurship" ? "text-[#2E2B82] font-bold" : "text-gray-700"}
-            `}
+              ${pathname === "/entrepreneurship" ? "text-[#2E2B82] font-bold" : "text-gray-700"}`}
           >
             Empreendimentos
           </Link>
@@ -127,22 +131,27 @@ export default function Header() {
             className={`relative after:content-[''] after:absolute after:left-0 after:-bottom-1 
               after:h-[2px] after:w-full after:bg-[#2E2B82] after:scale-x-0 
               after:transition-transform after:duration-300 hover:after:scale-x-100
-              ${pathname === "/contact" ? "text-[#2E2B82] font-bold" : "text-gray-700"}
-            `}
+              ${pathname === "/contact" ? "text-[#2E2B82] font-bold" : "text-gray-700"}`}
           >
             Contato
           </Link>
         </div>
 
-        {/* LOGIN DESKTOP — aparece só se NÃO estiver logado */}
         <div className="hidden lg:block">
-          {!logged && (
+          {!logged ? (
             <Link
               href="/login"
               className="bg-[#2E2B82] text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-[#292570]"
             >
               Login
             </Link>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-red-700"
+            >
+              Sair
+            </button>
           )}
         </div>
 
@@ -160,8 +169,8 @@ export default function Header() {
           <Link href="/entrepreneurship" onClick={() => setIsMenuOpen(false)} className={isActive("/entrepreneurship")}>Empreendimentos</Link>
           <Link href="/contact" onClick={() => setIsMenuOpen(false)} className={isActive("/contact")}>Contato</Link>
 
-          {/* LOGIN MOBILE — só aparece se NÃO estiver logado */}
-          {!logged && (
+          {/* LOGIN / LOGOUT MOBILE */}
+          {!logged ? (
             <Link
               href="/login"
               onClick={() => setIsMenuOpen(false)}
@@ -169,6 +178,13 @@ export default function Header() {
             >
               Login
             </Link>
+          ) : (
+            <button
+              onClick={() => { setIsMenuOpen(false); handleLogout(); }}
+              className="w-11/12 cursor-pointer text-center border-2 border-red-600 text-red-600 py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+            >
+              Sair
+            </button>
           )}
 
         </div>

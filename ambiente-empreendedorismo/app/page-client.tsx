@@ -71,14 +71,14 @@ export default function Home() {
           <div className="flex gap-2 md:gap-4 justify-center">
             <Link
               href="/about"
-              className="px-3 py-1.5 md:px-8 md:py-3 bg-[#2E2B82] text-white text-xs md:text-base font-bold rounded-full hover:bg-[#292570] transition"
+              className="flex items-center justify-center px-3 py-1.5 md:px-8 md:py-3 bg-[#2E2B82] text-white text-xs md:text-base font-bold rounded-full hover:bg-[#292570] transition"
             >
               Saiba Mais
             </Link>
 
             <Link
               href="/contact"
-              className="px-3 py-1.5 md:px-8 md:py-3 border-2 border-black text-black text-xs md:text-base font-bold rounded-full hover:bg-white/15 transition"
+              className="flex items-center justify-center px-3 py-1.5 md:px-8 md:py-3 border-2 border-black text-black text-xs md:text-base font-bold rounded-full hover:bg-white/15 transition"
             >
               Fale Conosco
             </Link>
